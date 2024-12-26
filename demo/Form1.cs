@@ -1,12 +1,20 @@
-﻿using Npgsql;
+﻿using iTextSharp.text.pdf;
+using iTextSharp.text;
+using Npgsql;
 using System;
 using System.Data;
+using System.Drawing;
 using System.Windows.Forms;
+using ZXing;
+
+
 
 namespace TaskManager
 {
     public partial class Form1 : Form
     {
+        private PictureBox pictureBoxQRCode;
+
         private const string connectionString = "Host=195.46.187.72;Username=postgres;Password=1337;Database=task";
 
         public Form1()
@@ -151,26 +159,32 @@ namespace TaskManager
             }
         }
 
-        private void LoadTasks()
+        private void LoadTasks(string searchKeyword = "")
         {
-            using (var conn = new NpgsqlConnection(connectionString))
+            using (var connection = new NpgsqlConnection(connectionString))
             {
-                try
-                {
-                    conn.Open();
-                    string query = "SELECT * FROM tasks";
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        NpgsqlDataAdapter dataAdapter = new NpgsqlDataAdapter(cmd);
-                        DataTable dataTable = new DataTable();
-                        dataAdapter.Fill(dataTable);
+                connection.Open();
 
-                        dataGridViewTasks.DataSource = dataTable;
-                    }
-                }
-                catch (Exception ex)
+                string query = "SELECT * FROM tasks";
+
+                // Если ключевое слово введено, добавляем условие поиска
+                if (!string.IsNullOrEmpty(searchKeyword))
                 {
-                    MessageBox.Show($"Ошибка при загрузке задач: {ex.Message}");
+                    query += " WHERE project_name ILIKE @searchKeyword OR description ILIKE @searchKeyword";
+                }
+                query += " ORDER BY creation_date DESC";
+
+                using (var cmd = new NpgsqlCommand(query, connection))
+                {
+                    if (!string.IsNullOrEmpty(searchKeyword))
+                    {
+                        cmd.Parameters.AddWithValue("searchKeyword", "%" + searchKeyword + "%");
+                    }
+
+                    var dataAdapter = new NpgsqlDataAdapter(cmd);
+                    var dataTable = new DataTable();
+                    dataAdapter.Fill(dataTable);
+                    dataGridViewTasks.DataSource = dataTable;
                 }
             }
         }
@@ -202,89 +216,10 @@ namespace TaskManager
             }
         }
 
-        // 1. Статистика по выполненным задачам
-        private void btnStatCompletedTasks_Click(object sender, EventArgs e)
+      
+        private void Form1_Load(object sender, EventArgs e)
         {
-            try
-            {
-                string query = "SELECT COUNT(*) FROM tasks WHERE status = 'Выполнено' AND due_date BETWEEN @startDate AND @endDate";
-
-                using (var conn = new NpgsqlConnection(connectionString))
-                {
-                    conn.Open();
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("startDate", dtpStartDate.Value);
-                        cmd.Parameters.AddWithValue("endDate", dtpEndDate.Value);
-
-                        var result = cmd.ExecuteScalar();
-                        lblCompletedTasks.Text = $"Выполнено задач: {result}";
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при расчёте статистики выполненных задач: {ex.Message}");
-            }
-        }
-
-        // 2. Статистика по среднему времени выполнения задач
-        private void btnAvgCompletionTime_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                string query = "SELECT AVG(EXTRACT(EPOCH FROM (due_date - created_at)) / 3600) FROM tasks WHERE status = 'Выполнено' AND due_date BETWEEN @startDate AND @endDate";
-
-                using (var conn = new NpgsqlConnection(connectionString))
-                {
-                    conn.Open();
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("startDate", dtpStartDate.Value);
-                        cmd.Parameters.AddWithValue("endDate", dtpEndDate.Value);
-
-                        var result = cmd.ExecuteScalar();
-                        //lblAvgCompletionTime.Text = $"Среднее время выполнения: {result} ч";
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при расчёте среднего времени выполнения: {ex.Message}");
-            }
-        }
-
-        // 3. Статистика по проектам и исполнителям
-        private void btnProjectAssigneeStats_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                string query = "SELECT project_name, assignee, COUNT(*) FROM tasks GROUP BY project_name, assignee";
-
-                using (var conn = new NpgsqlConnection(connectionString))
-                {
-                    conn.Open();
-                    using (var cmd = new NpgsqlCommand(query, conn))
-                    {
-                        using (var reader = cmd.ExecuteReader())
-                        {
-                            lstProjectAssigneeStats.Items.Clear();
-                            while (reader.Read())
-                            {
-                                string projectName = reader.GetString(0);
-                                string assignee = reader.GetString(1);
-                                int taskCount = reader.GetInt32(2);
-
-                                lstProjectAssigneeStats.Items.Add($"{projectName} - {assignee}: {taskCount} задач");
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при расчёте статистики по проектам и исполнителям: {ex.Message}");
-            }
+            LoadTasks();  // Загружаем все задачи при запуске
         }
 
         // Очистка формы после операций
@@ -299,6 +234,83 @@ namespace TaskManager
             dtpDueDate.Value = DateTime.Now;
             txtSearch.Clear();
         }
+        private void btnGenerateQRCode_Click(object sender, EventArgs e)
+        {
+            // Данные для QR-кода
+            string qrData = "https://vk.com/id570088156";  // Это может быть любой текст или URL
+
+            // Генерация QR-кода
+            BarcodeWriter barcodeWriter = new BarcodeWriter
+            {
+                Format = BarcodeFormat.QR_CODE,
+                Options = new ZXing.Common.EncodingOptions
+                {
+                    Width = 250,   // Ширина QR-кода
+                    Height = 250   // Высота QR-кода
+                }
+            };
+
+            // Генерация изображения QR-кода
+            Bitmap qrCodeImage = barcodeWriter.Write(qrData);
+
+            // Отображение QR-кода в PictureBox
+            pictureBox1.Image = qrCodeImage;
+        }
+        private void CalculateStatistics(DateTime startDate, DateTime endDate)
+        {
+            using (var connection = new NpgsqlConnection(connectionString))
+            {
+                connection.Open();
+
+
+                // Среднее время выполнения задач
+                string queryAvgDuration = "SELECT AVG(completion_date - creation_date) AS avg_duration FROM tasks WHERE status = 'Выполнено' AND completion_date BETWEEN @startDate AND @endDate";
+                using (var cmd = new NpgsqlCommand(queryAvgDuration, connection))
+                {
+                    cmd.Parameters.AddWithValue("startDate", startDate);
+                    cmd.Parameters.AddWithValue("endDate", endDate);
+                    var avgDuration = cmd.ExecuteScalar();
+                    labelAvgDuration.Text = $"Среднее время выполнения: {avgDuration}";
+                }
+
+                // Статистика по проектам
+                string queryProjectStats = "SELECT project_name, COUNT(*) AS task_count, COUNT(CASE WHEN status = 'Выполнено' THEN 1 END) AS completed_tasks FROM tasks GROUP BY project_name";
+                using (var cmd = new NpgsqlCommand(queryProjectStats, connection))
+                {
+                    var dataAdapter = new NpgsqlDataAdapter(cmd);
+                    var dataTable = new DataTable();
+                    dataAdapter.Fill(dataTable);
+                    dataGridViewProjectStats.DataSource = dataTable;
+                }
+                
+                // Статистика по исполнителям
+                string queryAssigneeStats = "SELECT assignee, COUNT(*) AS task_count, COUNT(CASE WHEN status = 'Выполнено' THEN 1 END) AS completed_tasks FROM tasks GROUP BY assignee";
+                using (var cmd = new NpgsqlCommand(queryAssigneeStats, connection))
+                {
+                    var dataAdapter = new NpgsqlDataAdapter(cmd);
+                    var dataTable = new DataTable();
+                    dataAdapter.Fill(dataTable);
+                    dataGridViewAssigneeStats.DataSource = dataTable;
+                }
+            }
+        }
+
+        // Обработчик для кнопки расчета статистики
+        private void buttonCalculateStatistics_Click(object sender, EventArgs e)
+        {
+            DateTime startDate = dateTimePickerStartDate.Value;
+            DateTime endDate = dateTimePickerEndDate.Value;
+            CalculateStatistics(startDate, endDate);
+        }
+
+        private void labelAvgDuration_Click(object sender, EventArgs e)
+        {
+
+        }
+
+       
+
+
     }
 
 }

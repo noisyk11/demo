@@ -5,6 +5,7 @@ namespace TaskManager
     partial class Form1
     {
         private System.ComponentModel.IContainer components = null;
+ 
 
         protected override void Dispose(bool disposing)
         {
@@ -19,6 +20,15 @@ namespace TaskManager
 
         private void InitializeComponent()
         {
+
+
+            this.dataGridViewTasks = new System.Windows.Forms.DataGridView();
+            this.labelAvgDuration = new System.Windows.Forms.Label();
+            this.dateTimePickerStartDate = new System.Windows.Forms.DateTimePicker();
+            this.dateTimePickerEndDate = new System.Windows.Forms.DateTimePicker();
+            this.buttonCalculateStatistics = new System.Windows.Forms.Button();
+            this.dataGridViewProjectStats = new System.Windows.Forms.DataGridView();
+            this.dataGridViewAssigneeStats = new System.Windows.Forms.DataGridView();
             this.txtTaskNumber = new System.Windows.Forms.TextBox();
             this.txtProjectName = new System.Windows.Forms.TextBox();
             this.txtDescription = new System.Windows.Forms.TextBox();
@@ -38,17 +48,75 @@ namespace TaskManager
             this.lblDueDate = new System.Windows.Forms.Label();
             this.lblPriority = new System.Windows.Forms.Label();
             this.lblStatus = new System.Windows.Forms.Label();
-            this.dataGridViewTasks = new System.Windows.Forms.DataGridView();
             this.btnLoadTasks = new System.Windows.Forms.Button();
-            this.btnStatCompletedTasks = new System.Windows.Forms.Button();
-            this.btnAvgCompletionTime = new System.Windows.Forms.Button();
-            this.btnProjectAssigneeStats = new System.Windows.Forms.Button();
-            this.lblCompletedTasks = new System.Windows.Forms.Label();
-            this.dtpStartDate = new System.Windows.Forms.DateTimePicker();
-            this.dtpEndDate = new System.Windows.Forms.DateTimePicker();
-            this.lstProjectAssigneeStats = new System.Windows.Forms.ListBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.btnGenerateQRCode = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTasks)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewProjectStats)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAssigneeStats)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
+
+          
+
+            // dataGridViewTasks
+            // 
+            this.dataGridViewTasks.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewTasks.Location = new System.Drawing.Point(381, 30);
+            this.dataGridViewTasks.Name = "dataGridViewTasks";
+            this.dataGridViewTasks.RowTemplate.Height = 24;
+            this.dataGridViewTasks.Size = new System.Drawing.Size(600, 250);
+            this.dataGridViewTasks.TabIndex = 15;
+            // 
+            // labelAvgDuration
+            // 
+            this.labelAvgDuration.AutoSize = true;
+            this.labelAvgDuration.Location = new System.Drawing.Point(1308, 9);
+            this.labelAvgDuration.Name = "labelAvgDuration";
+            this.labelAvgDuration.Size = new System.Drawing.Size(162, 13);
+            this.labelAvgDuration.TabIndex = 8;
+            this.labelAvgDuration.Text = "Среднее время выполнения: 0";
+            this.labelAvgDuration.Click += new System.EventHandler(this.labelAvgDuration_Click);
+            // 
+            // dateTimePickerStartDate
+            // 
+            this.dateTimePickerStartDate.Location = new System.Drawing.Point(1016, 256);
+            this.dateTimePickerStartDate.Name = "dateTimePickerStartDate";
+            this.dateTimePickerStartDate.Size = new System.Drawing.Size(200, 20);
+            this.dateTimePickerStartDate.TabIndex = 9;
+            // 
+            // dateTimePickerEndDate
+            // 
+            this.dateTimePickerEndDate.Location = new System.Drawing.Point(1016, 282);
+            this.dateTimePickerEndDate.Name = "dateTimePickerEndDate";
+            this.dateTimePickerEndDate.Size = new System.Drawing.Size(200, 20);
+            this.dateTimePickerEndDate.TabIndex = 10;
+            // 
+            // buttonCalculateStatistics
+            // 
+            this.buttonCalculateStatistics.Location = new System.Drawing.Point(1270, 253);
+            this.buttonCalculateStatistics.Name = "buttonCalculateStatistics";
+            this.buttonCalculateStatistics.Size = new System.Drawing.Size(200, 30);
+            this.buttonCalculateStatistics.TabIndex = 11;
+            this.buttonCalculateStatistics.Text = "Посчитать статистику";
+            this.buttonCalculateStatistics.UseVisualStyleBackColor = true;
+            this.buttonCalculateStatistics.Click += new System.EventHandler(this.buttonCalculateStatistics_Click);
+            // 
+            // dataGridViewProjectStats
+            // 
+            this.dataGridViewProjectStats.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewProjectStats.Location = new System.Drawing.Point(1006, 30);
+            this.dataGridViewProjectStats.Name = "dataGridViewProjectStats";
+            this.dataGridViewProjectStats.Size = new System.Drawing.Size(210, 210);
+            this.dataGridViewProjectStats.TabIndex = 12;
+            // 
+            // dataGridViewAssigneeStats
+            // 
+            this.dataGridViewAssigneeStats.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewAssigneeStats.Location = new System.Drawing.Point(1231, 30);
+            this.dataGridViewAssigneeStats.Name = "dataGridViewAssigneeStats";
+            this.dataGridViewAssigneeStats.Size = new System.Drawing.Size(239, 210);
+            this.dataGridViewAssigneeStats.TabIndex = 13;
             // 
             // txtTaskNumber
             // 
@@ -222,15 +290,6 @@ namespace TaskManager
             this.lblStatus.TabIndex = 14;
             this.lblStatus.Text = "Статус";
             // 
-            // dataGridViewTasks
-            // 
-            this.dataGridViewTasks.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewTasks.Location = new System.Drawing.Point(381, 30);
-            this.dataGridViewTasks.Name = "dataGridViewTasks";
-            this.dataGridViewTasks.RowTemplate.Height = 24;
-            this.dataGridViewTasks.Size = new System.Drawing.Size(600, 250);
-            this.dataGridViewTasks.TabIndex = 15;
-            // 
             // btnLoadTasks
             // 
             this.btnLoadTasks.Location = new System.Drawing.Point(381, 300);
@@ -241,77 +300,36 @@ namespace TaskManager
             this.btnLoadTasks.UseVisualStyleBackColor = true;
             this.btnLoadTasks.Click += new System.EventHandler(this.btnLoadTasks_Click);
             // 
-            // btnStatCompletedTasks
+            // pictureBox1
             // 
-            this.btnStatCompletedTasks.Location = new System.Drawing.Point(1006, 180);
-            this.btnStatCompletedTasks.Name = "btnStatCompletedTasks";
-            this.btnStatCompletedTasks.Size = new System.Drawing.Size(200, 23);
-            this.btnStatCompletedTasks.TabIndex = 19;
-            this.btnStatCompletedTasks.Text = "Статистика по выполненным задачам";
-            this.btnStatCompletedTasks.UseVisualStyleBackColor = true;
-            this.btnStatCompletedTasks.Click += new System.EventHandler(this.btnStatCompletedTasks_Click);
+            this.pictureBox1.Location = new System.Drawing.Point(1231, 309);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(239, 223);
+            this.pictureBox1.TabIndex = 0;
+            this.pictureBox1.TabStop = false;
             // 
-            // btnAvgCompletionTime
+            // btnGenerateQRCode
             // 
-            this.btnAvgCompletionTime.Location = new System.Drawing.Point(1006, 220);
-            this.btnAvgCompletionTime.Name = "btnAvgCompletionTime";
-            this.btnAvgCompletionTime.Size = new System.Drawing.Size(200, 23);
-            this.btnAvgCompletionTime.TabIndex = 20;
-            this.btnAvgCompletionTime.Text = "Среднее время выполнения";
-            this.btnAvgCompletionTime.UseVisualStyleBackColor = true;
-            this.btnAvgCompletionTime.Click += new System.EventHandler(this.btnAvgCompletionTime_Click);
-            // 
-            // btnProjectAssigneeStats
-            // 
-            this.btnProjectAssigneeStats.Location = new System.Drawing.Point(1006, 260);
-            this.btnProjectAssigneeStats.Name = "btnProjectAssigneeStats";
-            this.btnProjectAssigneeStats.Size = new System.Drawing.Size(200, 47);
-            this.btnProjectAssigneeStats.TabIndex = 21;
-            this.btnProjectAssigneeStats.Text = "Статистика по проектам и исполнителям";
-            this.btnProjectAssigneeStats.UseVisualStyleBackColor = true;
-            this.btnProjectAssigneeStats.Click += new System.EventHandler(this.btnProjectAssigneeStats_Click);
-            // 
-            // lblCompletedTasks
-            // 
-            this.lblCompletedTasks.AutoSize = true;
-            this.lblCompletedTasks.Location = new System.Drawing.Point(400, 12);
-            this.lblCompletedTasks.Name = "lblCompletedTasks";
-            this.lblCompletedTasks.Size = new System.Drawing.Size(108, 13);
-            this.lblCompletedTasks.TabIndex = 14;
-            this.lblCompletedTasks.Text = "Выполнено задач: 0";
-            // 
-            // dtpStartDate
-            // 
-            this.dtpStartDate.Location = new System.Drawing.Point(1006, 30);
-            this.dtpStartDate.Name = "dtpStartDate";
-            this.dtpStartDate.Size = new System.Drawing.Size(200, 20);
-            this.dtpStartDate.TabIndex = 17;
-            // 
-            // dtpEndDate
-            // 
-            this.dtpEndDate.Location = new System.Drawing.Point(1006, 70);
-            this.dtpEndDate.Name = "dtpEndDate";
-            this.dtpEndDate.Size = new System.Drawing.Size(200, 20);
-            this.dtpEndDate.TabIndex = 18;
-            // 
-            // lstProjectAssigneeStats
-            // 
-            this.lstProjectAssigneeStats.FormattingEnabled = true;
-            this.lstProjectAssigneeStats.Location = new System.Drawing.Point(1006, 111);
-            this.lstProjectAssigneeStats.Name = "lstProjectAssigneeStats";
-            this.lstProjectAssigneeStats.Size = new System.Drawing.Size(200, 56);
-            this.lstProjectAssigneeStats.TabIndex = 22;
+            this.btnGenerateQRCode.Location = new System.Drawing.Point(1006, 327);
+            this.btnGenerateQRCode.Name = "btnGenerateQRCode";
+            this.btnGenerateQRCode.Size = new System.Drawing.Size(200, 40);
+            this.btnGenerateQRCode.TabIndex = 1;
+            this.btnGenerateQRCode.Text = "Сгенерировать QR-код";
+            this.btnGenerateQRCode.UseVisualStyleBackColor = true;
+            this.btnGenerateQRCode.Click += new System.EventHandler(this.btnGenerateQRCode_Click);
             // 
             // Form1
             // 
-            this.ClientSize = new System.Drawing.Size(1280, 459);
-            this.Controls.Add(this.btnStatCompletedTasks);
-            this.Controls.Add(this.btnAvgCompletionTime);
-            this.Controls.Add(this.btnProjectAssigneeStats);
-            this.Controls.Add(this.lblCompletedTasks);
-            this.Controls.Add(this.dtpStartDate);
-            this.Controls.Add(this.dtpEndDate);
-            this.Controls.Add(this.lstProjectAssigneeStats);
+            
+            this.ClientSize = new System.Drawing.Size(1511, 555);
+            this.Controls.Add(this.dataGridViewAssigneeStats);
+            this.Controls.Add(this.dataGridViewProjectStats);
+            this.Controls.Add(this.buttonCalculateStatistics);
+            this.Controls.Add(this.dateTimePickerEndDate);
+            this.Controls.Add(this.dateTimePickerStartDate);
+            this.Controls.Add(this.labelAvgDuration);
+            this.Controls.Add(this.btnGenerateQRCode);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.lblDueDate);
             this.Controls.Add(this.dtpDueDate);
             this.Controls.Add(this.btnSearchTask);
@@ -336,20 +354,27 @@ namespace TaskManager
             this.Name = "Form1";
             this.Text = "Менеджер задач";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTasks)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewProjectStats)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAssigneeStats)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Button btnGenerateQRCode;
 
-        private Button btnStatCompletedTasks;
-        private Button btnAvgCompletionTime;
-        private Button btnProjectAssigneeStats;
-        private Label lblCompletedTasks;
-        private DateTimePicker dtpStartDate;
-        private DateTimePicker dtpEndDate;
-        private ListBox lstProjectAssigneeStats;
+        private System.Windows.Forms.Label labelAvgDuration;
+        private System.Windows.Forms.DateTimePicker dateTimePickerStartDate;
+        private System.Windows.Forms.DateTimePicker dateTimePickerEndDate;
+        private System.Windows.Forms.Button buttonCalculateStatistics;
+        private System.Windows.Forms.DataGridView dataGridViewProjectStats;
+        private System.Windows.Forms.DataGridView dataGridViewAssigneeStats;
+
+
+       
 
         private System.Windows.Forms.TextBox txtTaskNumber;
         private System.Windows.Forms.TextBox txtProjectName;
